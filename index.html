@@ -176,11 +176,11 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--dim);font
 .claim{margin-top:14px;width:100%}
 .cleared{margin-top:14px;padding:14px;border:1px solid var(--sys);background:var(--sys-dim);text-align:center;font-family:var(--f-display);letter-spacing:.1em;text-transform:uppercase}
 .reward{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-family:var(--f-mono);font-size:13px;color:var(--dim)}
-.days{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
-.day{aspect-ratio:1;max-width:100%;border:1px solid var(--line);background:var(--void)}
-.day.cleared{background:var(--sys);border-color:var(--sys)}
-.day.missed{background:var(--blood);border-color:var(--blood)}
-.day.frozen{background:var(--frost);border-color:var(--frost)}
+.days{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px}
+.day{aspect-ratio:1;max-width:100%;min-width:0;padding:0;border:1px solid var(--line);background:var(--void)}
+.day.s-cleared{background:var(--sys);border-color:var(--sys)}
+.day.s-missed{background:var(--blood);border-color:var(--blood)}
+.day.s-frozen{background:var(--frost);border-color:var(--frost)}
 .day.today{outline:2px solid var(--ink);outline-offset:1px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--dim)}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;background:var(--c)}
@@ -262,13 +262,13 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--dim);font
 .log div::before{content:"> ";color:var(--sys)}
 
 /* chest modal */
-.chest{width:130px;height:104px;margin:4px auto 16px;position:relative}
+.chest{width:130px;height:104px;margin:40px auto 16px;position:relative}
 .chest .lid,.chest .box{position:absolute;left:0;right:0;border:2px solid var(--tc);background:color-mix(in srgb,var(--tc) 22%,#120d06)}
 .chest .box{bottom:0;height:58%}
 .chest .lid{top:4px;height:40%;transform-origin:bottom left;transition:transform .5s ease}
 .chest .lock{position:absolute;left:50%;top:38%;width:16px;height:18px;margin-left:-8px;background:var(--tc);z-index:2;transition:opacity .2s}
 .chest.shake{animation:shake .45s infinite}
-.chest.open .lid{transform:rotate(-30deg) translateY(-16px)}
+.chest.open .lid{transform:rotate(-18deg) translateY(-10px)}
 .chest.open .lock{opacity:0}
 .chest .glow{position:absolute;inset:-46px;background:radial-gradient(circle,var(--glow),transparent 62%);opacity:0;transition:opacity .5s}
 .chest.open .glow{opacity:1}
@@ -309,6 +309,9 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--dim);font
 .guide b{font-family:var(--f-display);display:block}
 .guide span{color:var(--dim);font-size:14px}
 body{-webkit-user-select:none;user-select:none}
+html,body{overflow-x:hidden;max-width:100%}
+.screen>*,.pb>*,.ex>*{min-width:0}
+.screen{grid-template-columns:minmax(0,1fr)}
 .statusbar .sound{padding:8px 10px}.statusbar .sound .lbl{display:none}
 .toast{top:calc(16px + env(safe-area-inset-top,0px));bottom:auto}
 input{-webkit-user-select:text;user-select:text}
@@ -472,7 +475,7 @@ const RANKS=[
  {L:'B',t:'Warden',min:20,c:'var(--r-b)'},{L:'A',t:'Champion',min:35,c:'var(--r-a)'},{L:'S',t:'Sovereign',min:55,c:'var(--r-s)'}];
 const RAR={common:{c:'#9aa3b8',p:[2,4],sell:10},rare:{c:'#6f9bff',p:[5,8],sell:30},epic:{c:'#b77cff',p:[10,14],sell:80},legendary:{c:'#f0c055',p:[18,24],sell:200}};
 const RORDER=['legendary','epic','rare','common'];
-const SLOTS=[{id:'weapon',nm:'Weapon',st:'STR'},{id:'head',nm:'Head',st:'END',arm:1},{id:'chest',nm:'Chest',st:'VIT',arm:1},
+const SLOTS=[{id:'weapon',nm:'Weapon',st:'STR'},{id:'head',nm:'Head',st:'END',arm:1},{id:'chest',nm:'Body',st:'VIT',arm:1},
              {id:'hands',nm:'Hands',st:'STR',arm:1},{id:'feet',nm:'Feet',st:'AGI',arm:1},{id:'relic',nm:'Relic',st:'*'}];
 const GEAR={
  weapon:{common:['Iron Jump Rope','Weighted Club'],rare:['Kettlebell Mace'],epic:['Barbell Halberd'],legendary:['Oathsteel Greatbar']},
@@ -641,7 +644,7 @@ function renderDead(sc){
 function renderQuest(sc,r,R){
   const q=quest(),t=today(),done=!!S.days[t],allDone=q.every(x=>(S.prog.c[x.id]||0)>=x.t);
   const xpR=100+20*r+Math.min(S.streak,10)*5,tier=chestTierFor(S.streak+1);
-  let cells='';for(let i=13;i>=0;i--){const d=addDays(t,-i);let c=S.days[d]||'';if(d===t)c+=' today';cells+=`<div class="day ${c}" title="${d}${S.days[d]?' · '+S.days[d]:''}"></div>`}
+  let cells='';for(let i=13;i>=0;i--){const d=addDays(t,-i);let c=S.days[d]?'s-'+S.days[d]:'';if(d===t)c+=' today';cells+=`<div class="day ${c}" title="${d}${S.days[d]?' · '+S.days[d]:''}"></div>`}
   sc.innerHTML=`${installBanner()}
   <div class="win timer ${done?'':'red'}"><div><div class="eyebrow" style="color:${done?'var(--sys)':'var(--blood)'}">${done?'Next gate opens in':'Gate closes in'}</div><div class="clock" id="clock">--:--:--</div></div>
     <div style="text-align:right"><div class="eyebrow" style="color:var(--dim)">Streak</div><div class="mono" style="font-size:22px;font-weight:700">${S.streak}<span style="font-size:12px;color:var(--dim)"> days</span></div></div></div>
@@ -760,7 +763,7 @@ function showLanding(){$('#app').hidden=true;$('#landing').hidden=false;window.s
 function howTo(){openModal(`<div class="tag">HOW TO PLAY</div><h2>One gate a day</h2><div class="guide">
  <div><b>1 · Clear the quest</b><span>Log push-ups, sit-ups, squats and your run before midnight, then claim XP and gold.</span></div>
  <div><b>2 · Open chests</b><span>Every clear drops a chest. 3, 7 and 14-day streaks drop Iron, Gilded and Obsidian chests.</span></div>
- <div><b>3 · Gear up</b><span>Equip six slots to raise STR, AGI, VIT and END. Sell spares for gold.</span></div>
+ <div><b>3 · Gear up</b><span>Equip six slots (weapon, head, body, hands, feet, relic) to raise STR, AGI, VIT and END. Sell spares for gold.</span></div>
  <div><b>4 · Rank up</b><span>Levels lift you from E-Rank Initiate to S-Rank Sovereign. Higher ranks mean harder quests.</span></div>
  <div style="border-color:var(--blood)"><b style="color:var(--blood)">Miss a day</b><span>Lose a heart, your streak resets and your armor cracks. Lose all 3 hearts and you fall.</span></div>
  </div><div class="row"><button class="btn solid" id="hOk">Got it</button></div>`);$('#hOk').onclick=closeModal}
