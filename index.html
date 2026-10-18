@@ -504,6 +504,42 @@ h1,h2,h3{font-family:var(--f-fantasy);letter-spacing:.04em}
 .gear[data-r="legendary"],.slot[data-r="legendary"]{box-shadow:0 0 16px color-mix(in srgb,var(--rar) 45%,transparent)}
 @keyframes gshine{from{background-position:160% 0}to{background-position:-160% 0}}
 
+/* ================= ALTAR OF FATE ================= */
+.altar{border-color:rgba(139,108,255,.55)!important;background:radial-gradient(90% 70% at 50% 0,rgba(139,108,255,.22),transparent 70%),linear-gradient(180deg,rgba(22,18,48,.95),rgba(8,8,20,.96))!important;overflow:hidden}
+.altar .sigilbg{position:absolute;right:-30px;top:-30px;width:150px;height:150px;opacity:.18;pointer-events:none;animation:spin 40s linear infinite}
+.altar-txt{color:#c9c2e6;font-size:15px}
+.odds{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.odds span{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;padding:4px 8px;border:1px solid}
+.odds .good{color:var(--trim-hi);border-color:rgba(243,214,138,.4);background:rgba(243,214,138,.06)}
+.odds .bad{color:#ff9aab;border-color:rgba(255,84,112,.4);background:rgba(255,84,112,.06)}
+.altar-warn{font-size:13px;color:#ff9aab;margin-top:8px}
+.fx-chips{display:flex;flex-wrap:wrap;gap:8px}
+.fx-chip{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;border:1px solid;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.fx-chip b{font-family:var(--f-fantasy)}
+.fx-chip.good{color:var(--trim-hi);border-color:var(--trim);background:linear-gradient(90deg,rgba(243,214,138,.16),rgba(243,214,138,.03));box-shadow:0 0 16px rgba(243,214,138,.15)}
+.fx-chip.bad{color:#ffb3c0;border-color:rgba(255,84,112,.55);background:linear-gradient(90deg,rgba(255,84,112,.16),rgba(255,84,112,.03))}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:20px;perspective:900px}
+.fcard{position:relative;aspect-ratio:2/3;border:0;background:none;padding:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.3,.5,1);animation:deal .55s cubic-bezier(.2,1.4,.4,1) backwards}
+.fcard:nth-child(2){animation-delay:.12s}.fcard:nth-child(3){animation-delay:.24s}
+@keyframes deal{from{transform:translateY(60px) rotate(-14deg) scale(.6);opacity:0}}
+.fcard:not(.flip):not(:disabled):hover,.fcard:not(.flip):not(:disabled):focus-visible{transform:translateY(-8px)}
+.fcard.flip{transform:rotateY(180deg) scale(1.06)}
+.fcard.dim .ffront{filter:brightness(.42) saturate(.5)}.fcard.dim{transform:rotateY(180deg) scale(.94)}
+.fback,.ffront{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border:1px solid var(--trim);display:grid;place-items:center}
+.fback{background:radial-gradient(circle at 50% 50%,rgba(139,108,255,.45),transparent 58%),repeating-linear-gradient(45deg,rgba(201,162,74,.14) 0 2px,transparent 2px 11px),repeating-linear-gradient(-45deg,rgba(201,162,74,.10) 0 2px,transparent 2px 11px),#0b0b1e;
+  box-shadow:inset 0 0 0 4px #0b0b1e,inset 0 0 0 5px rgba(201,162,74,.5),0 10px 24px rgba(0,0,0,.6)}
+.fback::after{content:"\16DF";font-family:"Noto Sans Runic",serif;font-size:34px;color:var(--trim-hi);text-shadow:0 0 14px var(--arcane),0 0 4px var(--trim-hi);animation:glare 2.4s ease-in-out infinite}
+.ffront{transform:rotateY(180deg);align-content:center;gap:8px;padding:8px;text-align:center;background:linear-gradient(180deg,#1b2040,#07080f);box-shadow:inset 0 0 0 4px #07080f,inset 0 0 0 5px rgba(201,162,74,.4)}
+.ffront b{font-size:30px;line-height:1}
+.ffront span{font-family:var(--f-fantasy);font-weight:700;font-size:11.5px;line-height:1.2}
+.fcard.good .ffront{border-color:var(--trim-hi);color:var(--trim-hi);box-shadow:inset 0 0 0 4px #07080f,inset 0 0 0 5px var(--trim),inset 0 0 26px rgba(243,214,138,.35),0 0 26px rgba(243,214,138,.4)}
+.fcard.bad .ffront{border-color:var(--blood);color:#ffb3c0;background:linear-gradient(180deg,#2a0b16,#07080f);box-shadow:inset 0 0 0 4px #07080f,inset 0 0 0 5px rgba(255,84,112,.6),inset 0 0 26px rgba(255,84,112,.35),0 0 26px rgba(255,84,112,.4)}
+.fate-out{margin-top:18px;min-height:10px}
+.fate-out h3{font-size:22px}
+.fate-out.good h3{color:var(--trim-hi);text-shadow:0 0 14px rgba(243,214,138,.5)}
+.fate-out.bad h3{color:#ff5470;text-shadow:0 0 14px rgba(255,84,112,.6)}
+.fate-out p{margin-top:6px}
+
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;padding-block:24px}
   .cols4{grid-template-columns:1fr 1fr}
@@ -634,7 +670,7 @@ const SND={
     if(sweep)fl.frequency.exponentialRampToValueAtTime(sweep,t+d);const g=c.createGain();g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(this.fx);s.start(t);s.stop(t+d+.05)},
   sfx(k,x){
     buzz({tick:8,tab:6,done:[15,40,15],notice:[20,60,20],claim:[30,60,30,60,90],shake:12,open:x==='legendary'||x==='epic'?[60,40,60,40,200]:[40,30,100],
-      equip:20,coin:12,hurt:[220,80,220],shatter:[50,30,50,30,50],level:[30,40,30,40,60],fall:[400,120,600]}[k]);
+      equip:20,coin:12,altar:[30,80,30],flip:15,bless:[40,40,40,40,120],curse:[180,60,260],hit:30,crit:[40,30,90],slay:[80,40,80,40,300],hurt:[220,80,220],shatter:[50,30,50,30,50],level:[30,40,30,40,60],fall:[400,120,600]}[k]);
     switch(k){
       case 'tick':this.tone(740,.06,'square',.04);break;
       case 'done':this.tone(587,.08,'square',.05);this.tone(880,.12,'square',.05,.07);break;
@@ -652,6 +688,10 @@ const SND={
       case 'hit':this.noise(.16,'lowpass',900,.28);this.tone(170,.2,'sawtooth',.11,0,55);break;
       case 'crit':this.noise(.22,'lowpass',1400,.32);this.tone(200,.25,'sawtooth',.13,0,50);this.tone(1320,.18,'square',.05,.04);this.tone(1760,.25,'square',.04,.1);break;
       case 'slay':this.tone(240,1.3,'sawtooth',.13,0,35);this.noise(1.1,'lowpass',500,.26,0,70);[293.66,349.23,440,587.33].forEach((f,i)=>this.tone(f,.7,'triangle',.07,.5+i*.11));break;
+      case 'altar':this.tone(55,2.4,'sine',.22);this.tone(82.4,2.4,'sine',.1);this.tone(1318.5,1.6,'sine',.03,.3);this.tone(1396.9,1.6,'sine',.025,.5);break;
+      case 'flip':this.noise(.18,'bandpass',2200,.14,0,600);this.tone(440,.3,'triangle',.05,.05,880);break;
+      case 'bless':[523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>this.tone(f,1.1,'triangle',.07,i*.08));this.tone(130.8,1.8,'sine',.16);break;
+      case 'curse':this.tone(98,1.4,'sawtooth',.12,0,49);this.tone(103.8,1.4,'sawtooth',.1,0,52);this.tone(622,.9,'square',.03,.1,311);this.noise(.8,'lowpass',500,.2);break;
       case 'fall':this.tone(110,2.5,'sawtooth',.12,0,30);this.tone(116.5,2.5,'sawtooth',.1,0,32);break;
     }
   }
@@ -749,10 +789,10 @@ function fresh(name){S=null;const t=today();const s={name,created:t,offset:0,las
   const w=makeItem('hands','common');s.bag.push(w);s.eq.hands=w.id;s.log.unshift(`${t} · ${name} entered the gate with Frayed Hand Wraps and a wooden chest.`);return s}
 const rankIdx=lv=>{let r=0;RANKS.forEach((x,i)=>{if(lv>=x.min)r=i});return r};
 const need=lv=>100+(lv-1)*25;
-const quest=()=>{const r=rankIdx(S.level);return[{id:'push',nm:'Push-ups',t:20+10*r,s:5},{id:'sit',nm:'Sit-ups',t:20+10*r,s:5},{id:'squat',nm:'Squats',t:30+10*r,s:5},{id:'run',nm:'Run',t:1+.5*r,s:.5,u:'km'}]};
+const quest=()=>{const r=rankIdx(S.level),m=S.heavy>0?1.5:1,rep=t=>Math.ceil(t*m/5)*5;return[{id:'push',nm:'Push-ups',t:rep(20+10*r),s:5},{id:'sit',nm:'Sit-ups',t:rep(20+10*r),s:5},{id:'squat',nm:'Squats',t:rep(30+10*r),s:5},{id:'run',nm:'Run',t:Math.ceil((1+.5*r)*m*2)/2,s:.5,u:'km'}]};
 const item=id=>S.bag.find(i=>i.id===id);
 function attrs(){const base=4+S.level;const a={STR:base,AGI:base,VIT:base,END:base},g={STR:0,AGI:0,VIT:0,END:0};
-  Object.values(S.eq).forEach(id=>{const it=item(id);if(it)g[it.st]+=it.v});return{a,g,power:Object.values(g).reduce((x,y)=>x+y,0)}}
+  Object.values(S.eq).forEach(id=>{const it=item(id);if(it)g[it.st]+=it.v});if(S.titan>0)for(const k in g)g[k]+=5;return{a,g,power:Object.values(g).reduce((x,y)=>x+y,0)}}
 function log(m){S.log.unshift(`${today()} · ${m}`);S.log=S.log.slice(0,40)}
 function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
 function flash(){const d=document.createElement('div');d.className='hurt-flash';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}
@@ -798,7 +838,7 @@ function chestTierFor(streak){return streak>=14?'obsidian':streak>=7?'gold':stre
 function claim(){
   const t=today();if(S.days[t])return;
   const cb=$('#claim'),[cx,cy]=cb?FX.at(cb):[innerWidth/2,innerHeight/2];
-  const r=rankIdx(S.level);const xp=100+20*r+Math.min(S.streak,10)*5,gold=20+5*r;
+  const r=rankIdx(S.level);let xp=100+20*r+Math.min(S.streak,10)*5;const gold=20+5*r,blessed=S.titan>0;if(blessed){xp*=2;S.titan--}if(S.heavy>0)S.heavy--;
   S.days[t]='cleared';S.streak++;S.best=Math.max(S.best,S.streak);S.xp+=xp;S.totalXp+=xp;S.gold+=gold;
   let lv=0;while(S.xp>=need(S.level)){S.xp-=need(S.level);S.level++;lv++}
   const heal=S.streak%7===0&&S.hearts<3;if(heal)S.hearts++;
@@ -807,7 +847,7 @@ function claim(){
   log(`Gate cleared. +${xp} XP, +${gold} G, ${CHESTS[tier].nm} chest.`);if(lv)log(`Level up → ${S.level}.`);if(bonus)log(`Rank up → ${bonus.L}-Rank ${bonus.t}. Bonus gilded chest.`);
   save();render();SND.sfx('claim');FX.burst(cx,cy,'#f3d68a',70,6.5,.16);FX.burst(cx,cy,'#5fe1d9',30,4.5,.08);if(lv)setTimeout(()=>{SND.sfx('level');FX.levelUp(S.level)},450);
   openModal(`<div class="tag">GATE CLEARED</div><h2>Quest complete</h2>
-    <p class="mono" style="color:var(--gold);font-size:16px">+${xp} XP · +${gold} G</p>
+    <p class="mono" style="color:var(--gold);font-size:16px">+${xp} XP · +${gold} G</p>${blessed?`<p style="color:var(--trim-hi)">Titan's Blessing doubled your XP${S.titan?` (${S.titan} clear${S.titan>1?'s':''} left)`:' (now spent)'}.</p>`:''}
     ${lv?`<p style="color:var(--sys)">Level up. You are now level ${S.level}.</p>`:''}
     ${bonus?`<p style="color:${bonus.c}">Rank up: ${bonus.L}-Rank ${bonus.t}. Your quests just got harder. Bonus gilded chest.</p>`:''}
     ${heal?`<p style="color:var(--blood)">7-day streak: +1 heart restored.</p>`:''}
@@ -910,9 +950,9 @@ function bossHtml(r,R,q,done){const B=BOSSES[r],mx=bossMax(r),p=done?1:questPct(
   </div>`}
 function renderQuest(sc,r,R){
   const q=quest(),t=today(),done=!!S.days[t],allDone=q.every(x=>(S.prog.c[x.id]||0)>=x.t);
-  const xpR=100+20*r+Math.min(S.streak,10)*5,tier=chestTierFor(S.streak+1);
+  const xpR=(100+20*r+Math.min(S.streak,10)*5)*(S.titan>0?2:1),tier=chestTierFor(S.streak+1);
   let cells='';for(let i=13;i>=0;i--){const d=addDays(t,-i);let c=S.days[d]?'s-'+S.days[d]:'';if(d===t)c+=' today';cells+=`<div class="day ${c}" title="${d}${S.days[d]?' · '+S.days[d]:''}"></div>`}
-  sc.innerHTML=`${installBanner()}
+  sc.innerHTML=`${installBanner()}${effectsHtml()}
   <div class="win timer ${done?'':'red'}"><div><div class="eyebrow" style="color:${done?'var(--sys)':'var(--blood)'}">${done?'Next gate opens in':'Gate closes in'}</div><div class="clock" id="clock">--:--:--</div></div>
     <div style="text-align:right"><div class="eyebrow" style="color:var(--dim)">Streak</div><div class="mono" style="font-size:22px;font-weight:700">${S.streak}<span style="font-size:12px;color:var(--dim)"> days</span></div></div></div>
   <div class="win sys">
@@ -972,7 +1012,7 @@ function renderHunter(sc,r,R){
       <div class="xpbar"><i style="width:${S.xp/need(S.level)*100}%"></i></div>
       <div class="xpmeta"><span class="mono">Lv ${S.level}</span><span class="mono">${S.xp} / ${need(S.level)} XP</span></div></div>
     <div class="attrs">${['STR','AGI','VIT','END'].map(s=>`<div class="attr"><div class="k">${s}</div><div class="v">${a[s]+g[s]} ${g[s]?`<small>+${g[s]}</small>`:''}</div></div>`).join('')}</div>
-    <div class="note" style="grid-column:1/-1">Gear power ${power} · ${nx?`${nx.L}-Rank at level ${nx.min}`:'Highest rank reached'} · ${S.freezes} streak freeze${S.freezes===1?'':'s'}</div>
+    ${effectsHtml()?`<div style="grid-column:1/-1">${effectsHtml()}</div>`:''}<div class="note" style="grid-column:1/-1">Gear power ${power} · ${nx?`${nx.L}-Rank at level ${nx.min}`:'Highest rank reached'} · ${S.freezes} streak freeze${S.freezes===1?'':'s'}</div>
   </div>
   <div class="win sys"><div class="ph"><h3>Equipment</h3><span class="note">Tap a slot to unequip</span></div><div class="pb"><div class="figure">${hunterSvg()}</div>
     <div class="slots">${SLOTS.map(s=>{const it=item(S.eq[s.id]);if(!it)return`<button class="slot empty" data-go="loot"><span class="sl">${s.nm}</span><span class="sn">Empty</span><span class="ss" style="color:var(--dim)">Find in chests</span></button>`;
@@ -983,11 +1023,71 @@ function renderHunter(sc,r,R){
   sc.querySelectorAll('[data-uneq]').forEach(b=>b.onclick=()=>unequip(b.dataset.uneq));
   sc.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{TAB=b.dataset.go;render()});
 }
+
+function effectsHtml(){const c=[];
+  if(S.titan>0)c.push(`<div class="fx-chip good"><span>⚔</span><span><b>Titan's Blessing</b> · +5 all stats, 2× XP · ${S.titan} clear${S.titan>1?'s':''} left</span></div>`);
+  if(S.heavy>0)c.push(`<div class="fx-chip bad"><span>⛓</span><span><b>Heavy Gate</b> · +50% reps${S.heavy>1?` · ${S.heavy} gates`:''}</span></div>`);
+  return c.length?`<div class="fx-chips">${c.join('')}</div>`:''}
+const FATES=[
+ {id:'titan',w:14,good:1,ic:'⚔',nm:'Blessing of the Titan',d:'Mystic strength floods your veins: +5 to every stat and double XP for your next 3 gate clears.'},
+ {id:'legend',w:6,good:1,ic:'✦',nm:'Relic of Legend',d:'A legendary item materialises in your bag.'},
+ {id:'epic',w:14,good:1,ic:'◆',nm:'Gift of the Deep',d:'An epic item materialises in your bag.'},
+ {id:'chest',w:16,good:1,ic:'▣',nm:'Gilded Offering',d:'A Gilded chest appears in your Loot.'},
+ {id:'gold',w:14,good:1,ic:'◎',nm:"Dragon's Hoard",d:'+150 gold spills from the altar.'},
+ {id:'heart',w:10,good:1,ic:'♥',nm:'Spring of Life',d:'A heart is restored. At full health you get a streak freeze instead.'},
+ {id:'bleed',w:12,good:0,ic:'☠',nm:'Blood Price',d:'The altar drinks deep. You lose 2 hearts.'},
+ {id:'rust',w:8,good:0,ic:'✕',nm:'Curse of Rust',d:'Every piece of armor you wear cracks once.'},
+ {id:'heavy',w:6,good:0,ic:'⛓',nm:'Curse of the Heavy Gate',d:'Your next gate demands 50% more reps.'}];
+const ALTAR_COST=60,ALTAR_MAX=3;
+const altarLeft=()=>ALTAR_MAX-(S.altar&&S.altar.date===today()?S.altar.n:0);
+function rollFate(){let x=Math.random()*100;for(const f of FATES){if((x-=f.w)<0)return f}return FATES[0]}
+function applyFate(f){let msg=f.d;
+  switch(f.id){
+    case'titan':S.titan=(S.titan||0)+3;break;
+    case'legend':case'epic':{const it=makeItem(SLOTS[Math.floor(Math.random()*SLOTS.length)].id,f.id==='legend'?'legendary':'epic');S.bag.push(it);msg=`${it.nm} (+${it.v} ${it.st}) is now in your bag.`;break}
+    case'chest':S.chests.gold++;break;
+    case'gold':S.gold+=150;break;
+    case'heart':if(S.hearts<3)S.hearts++;else if(S.freezes<3){S.freezes++;msg='You are at full health, so the spring grants a streak freeze.'}else{S.gold+=90;msg='Full health and full freezes: the spring turns to 90 gold.'}break;
+    case'bleed':S.hearts=Math.max(0,S.hearts-2);if(S.hearts===0){S.dead=true;msg='The altar drank your last heart. Your hunter has fallen.'}else msg=`You lose 2 hearts. ${S.hearts} left.`;break;
+    case'rust':{const rep={shattered:[],cracked:0};crackArmor(rep);msg=rep.cracked||rep.shattered.length?`Your armor cracks.${rep.shattered.length?' Shattered: '+rep.shattered.join(', ')+'.':''}`:'You wear no armor, so the rust finds nothing to eat. Lucky.';break}
+    case'heavy':S.heavy=(S.heavy||0)+1;break;
+  }
+  log(`Altar of Fate: ${f.nm}.`);save();return msg}
+function altar(){
+  if(S.gold<ALTAR_COST||altarLeft()<=0)return;
+  S.gold-=ALTAR_COST;S.altar={date:today(),n:(S.altar&&S.altar.date===today()?S.altar.n:0)+1};save();render();SND.sfx('altar');
+  openModal(`<div class="tag" style="border-color:var(--arcane);color:#cbbcff">ALTAR OF FATE</div><h2>Choose your fate</h2><p>Three cards. One destiny. Tap a card to turn it.</p>
+   <div class="cards">${[0,1,2].map(i=>`<button class="fcard" data-c="${i}" aria-label="Fate card ${i+1}"><span class="fback"></span><span class="ffront"></span></button>`).join('')}</div>
+   <div class="fate-out" id="fateOut"></div>`);
+  let picked=false;
+  document.querySelectorAll('.fcard').forEach(c=>c.onclick=()=>{
+    if(picked)return;picked=true;const f=rollFate();
+    c.querySelector('.ffront').innerHTML=`<b>${f.ic}</b><span>${f.nm}</span>`;c.classList.add(f.good?'good':'bad','flip');SND.sfx('flip');
+    document.querySelectorAll('.fcard').forEach(o=>{o.disabled=true;if(o!==c){const g=FATES.filter(x=>x.id!==f.id)[Math.floor(Math.random()*(FATES.length-1))];
+      setTimeout(()=>{o.querySelector('.ffront').innerHTML=`<b>${g.ic}</b><span>${g.nm}</span>`;o.classList.add(g.good?'good':'bad','flip','dim')},900)}});
+    setTimeout(()=>{
+      const msg=applyFate(f);const[cx,cy]=FX.at(c);
+      if(f.good){SND.sfx('bless');FX.burst(cx,cy,'#f3d68a',90,6.5,.06);FX.burst(cx,cy,f.id==='titan'?'#ff8a3d':'#5fe1d9',40,5,.05)}
+      else{SND.sfx('curse');flash();FX.shake($('#modal'));FX.burst(cx,cy,'#ff5470',70,6,.12);if(f.id==='bleed')setTimeout(()=>SND.sfx('hurt'),250)}
+      const o=$('#fateOut');o.className='fate-out '+(f.good?'good':'bad');
+      o.innerHTML=`<h3>${f.good?'Blessed':'Cursed'}: ${f.nm}</h3><p>${esc(msg)}</p><div class="row"><button class="btn ${f.good?'solid':'gold'}" id="fateOk">${S.dead?'Face your fate':'Accept fate'}</button></div>`;
+      $('#fateOk').onclick=()=>{closeModal();if(S.dead)SND.sfx('fall');render()};$('#fateOk').focus();
+    },750)});
+}
+function altarHtml(){const left=altarLeft(),ok=S.gold>=ALTAR_COST&&left>0;
+  const good=FATES.filter(f=>f.good).reduce((a,f)=>a+f.w,0);
+  return`<div class="win altar"><svg class="sigilbg" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#cbbcff"/><path d="M50 6 L88 72 L12 72 Z M50 94 L12 28 L88 28 Z" fill="none" stroke="#cbbcff"/></svg>
+  <div class="ph"><h3>Altar of Fate</h3><span class="note">${left} of ${ALTAR_MAX} offerings left today</span></div><div class="pb">
+   <p class="altar-txt">Offer ${ALTAR_COST} gold and turn one of three fate cards. Fortune favours the bold, mostly.</p>
+   <div class="odds"><span class="good">Blessings ${good}%</span><span class="bad">Curses ${100-good}%</span><span class="good">Titan's Blessing 14%</span><span class="bad">Blood Price −2 ♥ 12%</span></div>
+   <button class="btn gold big" id="altarBtn" ${ok?'':'disabled'}>${left<=0?'The altar sleeps until tomorrow':S.gold<ALTAR_COST?`Need ${ALTAR_COST} gold (you have ${S.gold})`:`Make an offering · ${ALTAR_COST} G`}</button>
+   ${S.hearts<=2&&ok?`<p class="altar-warn">You have ${S.hearts} heart${S.hearts>1?'s':''}. A Blood Price would make you fall.</p>`:''}
+  </div></div>`}
 function renderLoot(sc){
   const eqd=new Set(Object.values(S.eq));
   let bag=S.bag.slice().sort((x,y)=>RORDER.indexOf(x.rar)-RORDER.indexOf(y.rar)||y.v-x.v);
   if(BAGF!=='all')bag=bag.filter(i=>i.slot===BAGF);
-  sc.innerHTML=`
+  sc.innerHTML=`${altarHtml()}
   <div class="win sys"><div class="ph"><h3>Chests</h3><span class="note">${chestCount()} unopened</span></div><div class="pb">
     <div class="chests">${Object.entries(CHESTS).map(([id,c])=>`<div class="cslot ${S.chests[id]?'':'none'}" style="--tc:${c.c}"><div class="mini"></div><div class="cn">${c.nm}</div><div class="cc">×${S.chests[id]}</div>
       <button class="btn sm" data-open="${id}" ${S.chests[id]?'':'disabled'} style="border-color:${c.c};color:${c.c};background:transparent">Open</button></div>`).join('')}</div>
@@ -1000,6 +1100,7 @@ function renderLoot(sc){
       :`<div class="empty">Nothing here yet. Open a chest to fill your bag.</div>`}
   </div></div>`;
   sc.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openChest(b.dataset.open));
+  {const ab=$('#altarBtn');if(ab)ab.onclick=altar}
   sc.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{BAGF=b.dataset.f;SND.sfx('tick');render()});
   sc.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>equip(b.dataset.eq));
   sc.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const it=item(b.dataset.sell);if(eqd.has(it.id)||it.rar==='epic'||it.rar==='legendary')confirmModal(`Sell ${esc(it.nm)}?`,`You get ${RAR[it.rar].sell} gold. This can't be undone.`,'Sell',()=>sell(it.id));else sell(it.id)});
@@ -1055,6 +1156,7 @@ function howTo(){openModal(`<div class="tag">HOW TO PLAY</div><h2>One gate a day
  <div><b>2 · Open chests</b><span>Every clear drops a chest. 3, 7 and 14-day streaks drop Iron, Gilded and Obsidian chests.</span></div>
  <div><b>3 · Gear up</b><span>Equip six slots (weapon, head, body, hands, feet, relic) to raise STR, AGI, VIT and END. Sell spares for gold.</span></div>
  <div><b>4 · Rank up</b><span>Levels lift you from E-Rank Initiate to S-Rank Sovereign. Higher ranks mean harder quests.</span></div>
+ <div style="border-color:var(--arcane)"><b style="color:#cbbcff">Altar of Fate</b><span>In the Loot tab, offer gold to turn a fate card. Win loot, gold or the Titan's Blessing, or risk curses that cost hearts.</span></div>
  <div style="border-color:var(--blood)"><b style="color:var(--blood)">Miss a day</b><span>Lose a heart, your streak resets and your armor cracks. Lose all 3 hearts and you fall.</span></div>
  </div><div class="row"><button class="btn solid" id="hOk">Got it</button></div>`);$('#hOk').onclick=closeModal}
 
