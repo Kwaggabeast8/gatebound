@@ -464,6 +464,46 @@ h1,h2,h3{font-family:var(--f-fantasy);letter-spacing:.04em}
 .toast{top:calc(74px + env(safe-area-inset-top,0px))}
 .bgrune{opacity:.05}.bgrune .core{display:none}
 
+/* ================= BOSS ARENA ================= */
+.arena{position:relative;padding-bottom:6px;background:radial-gradient(70% 60% at 50% 62%,color-mix(in srgb,var(--bc) 22%,transparent),transparent 70%)}
+.arena .qhead h2{font-size:30px}
+.boss{position:relative;display:grid;place-items:center;height:178px;margin-top:-4px}
+.beast{width:min(250px,72vw);height:auto;overflow:visible}
+.beast .shadow{fill:rgba(0,0,0,.6)}
+.beast .bob{transform-box:fill-box;transform-origin:50% 100%;animation:bossidle 3.2s ease-in-out infinite}
+@keyframes bossidle{50%{transform:translateY(-5px) scaleY(1.025)}}
+.beast .body{fill:color-mix(in srgb,var(--bc) 16%,#05060c);stroke:var(--bc);stroke-width:2.2;stroke-linejoin:round;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--bc) 55%,transparent))}
+.beast .horn{fill:color-mix(in srgb,var(--bc) 30%,#0b0d1a);stroke:var(--bc);stroke-width:2;stroke-linejoin:round}
+.beast .eye{fill:#fff;stroke:var(--bc);stroke-width:3;paint-order:stroke;filter:drop-shadow(0 0 6px var(--bc)) drop-shadow(0 0 14px var(--bc));animation:glare 4s ease-in-out infinite}
+@keyframes glare{50%{opacity:.75}}
+.beast .maw{fill:#010205;stroke:var(--bc);stroke-width:1.6;stroke-linejoin:round}
+.beast .claw{fill:none;stroke:var(--bc);stroke-width:3;stroke-linecap:round}
+.beast .rune{fill:none;stroke:var(--bc);stroke-width:1.4;opacity:.7}
+.boss.hit .beast{animation:bosshit .38s ease-out}
+@keyframes bosshit{0%{filter:brightness(4) saturate(0)}25%{transform:translateX(-10px) rotate(-2deg)}55%{transform:translateX(7px) rotate(1deg)}100%{filter:none;transform:none}}
+.arena.dead .beast{filter:grayscale(1) brightness(.4);opacity:.75;transition:filter .8s,opacity .8s}
+.arena.dead .bob,.arena.dead .eye{animation:none}
+.slain{position:absolute;font-family:var(--f-fantasy);font-weight:900;font-size:38px;letter-spacing:.1em;color:#ff5470;border:3px solid #ff5470;padding:0 18px;transform:rotate(-12deg);
+  text-shadow:0 0 18px rgba(255,84,112,.8);box-shadow:0 0 22px rgba(255,84,112,.4),inset 0 0 18px rgba(255,84,112,.3);background:rgba(10,0,4,.35);animation:stamp .45s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes stamp{from{transform:rotate(-12deg) scale(2.6);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:1}}
+.hp{padding:4px 18px 0;display:grid;gap:4px}
+.hpbar{position:relative;height:16px;background:#04050a;border:1px solid rgba(201,162,74,.5);clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.hpbar b,.hpbar i{position:absolute;left:0;top:0;bottom:0;display:block}
+.hpbar b{background:#fff3f5;opacity:.75;transition:width .9s ease .35s}
+.hpbar i{background:linear-gradient(180deg,#ff8fa3,#ff3d5e 50%,#9c1430);box-shadow:0 0 12px rgba(255,84,112,.8);transition:width .35s cubic-bezier(.2,.9,.3,1)}
+.hpnum{text-align:center;font-size:12px;color:#ffb3c0;letter-spacing:.12em}
+.ftxt.big{font-size:32px;font-family:var(--f-fantasy);font-weight:900}
+.white-flash{position:fixed;inset:0;pointer-events:none;z-index:95;background:#fff;animation:wflash .5s ease-out forwards}
+@keyframes wflash{from{opacity:.75}to{opacity:0}}
+.screen.enter>*{animation:scrin .42s cubic-bezier(.2,.8,.2,1) both}
+.screen.enter>*:nth-child(2){animation-delay:.05s}.screen.enter>*:nth-child(3){animation-delay:.1s}.screen.enter>*:nth-child(4){animation-delay:.15s}
+@keyframes scrin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.gear[data-r="legendary"],.gear[data-r="epic"],.slot[data-r="legendary"],.slot[data-r="epic"]{position:relative;overflow:hidden}
+.gear[data-r="legendary"]::after,.gear[data-r="epic"]::after,.slot[data-r="legendary"]::after,.slot[data-r="epic"]::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(110deg,transparent 35%,color-mix(in srgb,var(--rar) 40%,transparent) 50%,transparent 65%) no-repeat;background-size:260% 100%;animation:gshine 3.2s linear infinite}
+.gear[data-r="legendary"],.slot[data-r="legendary"]{box-shadow:0 0 16px color-mix(in srgb,var(--rar) 45%,transparent)}
+@keyframes gshine{from{background-position:160% 0}to{background-position:-160% 0}}
+
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;padding-block:24px}
   .cols4{grid-template-columns:1fr 1fr}
@@ -609,6 +649,9 @@ const SND={
       case 'hurt':this.tone(140,.5,'sawtooth',.14,0,40);this.noise(.3,'lowpass',600,.18);break;
       case 'shatter':this.noise(.5,'highpass',2500,.2,0,8000);[1800,2400,3100].forEach((f,i)=>this.tone(f,.25,'triangle',.04,i*.04));break;
       case 'level':[293.66,440,587.33,880].forEach((f,i)=>this.tone(f,.6,'sawtooth',.04,i*.12));break;
+      case 'hit':this.noise(.16,'lowpass',900,.28);this.tone(170,.2,'sawtooth',.11,0,55);break;
+      case 'crit':this.noise(.22,'lowpass',1400,.32);this.tone(200,.25,'sawtooth',.13,0,50);this.tone(1320,.18,'square',.05,.04);this.tone(1760,.25,'square',.04,.1);break;
+      case 'slay':this.tone(240,1.3,'sawtooth',.13,0,35);this.noise(1.1,'lowpass',500,.26,0,70);[293.66,349.23,440,587.33].forEach((f,i)=>this.tone(f,.7,'triangle',.07,.5+i*.11));break;
       case 'fall':this.tone(110,2.5,'sawtooth',.12,0,30);this.tone(116.5,2.5,'sawtooth',.1,0,32);break;
     }
   }
@@ -646,7 +689,7 @@ const FX=(()=>{
     burst(x,y,color='#5fe1d9',n=30,spd=4,g=.06){if(RM)return;const c=rgb(color);for(let i=0;i<n;i++){const a=Math.random()*6.283,s=spd*(.25+Math.random()),l=40+Math.random()*45;
       parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1.2,g,r:1+Math.random()*2.3,c,life:l,max:l})}},
     at(el){const r=el.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2]},
-    float(x,y,text,color){const s=document.createElement('div');s.className='ftxt';s.textContent=text;s.style.left=x+'px';s.style.top=y+'px';s.style.color=color;document.body.appendChild(s);setTimeout(()=>s.remove(),1000)},
+    float(x,y,text,color,cls){const s=document.createElement('div');s.className='ftxt '+(cls||'');s.textContent=text;s.style.left=x+'px';s.style.top=y+'px';s.style.color=color;document.body.appendChild(s);setTimeout(()=>s.remove(),1000)},
     shake(el){el=el||document.querySelector('.shell');if(!el||RM)return;el.classList.remove('shk');void el.offsetWidth;el.classList.add('shk');setTimeout(()=>el.classList.remove('shk'),500)},
     levelUp(lv){const d=document.createElement('div');d.className='lvup';d.innerHTML=`<div class="in"><div class="rays"></div><div class="lv-t">LEVEL UP</div><div class="lv-n">LV ${lv}</div></div>`;
       document.body.appendChild(d);this.burst(innerWidth/2,innerHeight/2,'#f3d68a',80,7,.05);this.burst(innerWidth/2,innerHeight/2,'#5fe1d9',40,5,.05);setTimeout(()=>d.remove(),2500)}
@@ -824,7 +867,7 @@ function render(){
    <div class="sb-res"><span class="h" aria-label="${S.hearts} hearts">${heartsSvg(S.hearts)}</span><span style="color:var(--gold)">${S.gold}G</span></div><button class="sound" data-sound aria-label="Toggle sound"></button>`;
   const cc=chestCount();
   $('#tabs').innerHTML=TABS.map(([id,nm])=>`<button class="tab ${TAB===id?'on':''}" data-tab="${id}" ${TAB===id?'aria-current="page"':''}><svg><use href="#i-${id}"/></svg>${nm}${id==='loot'&&cc?`<span class="badge">${cc}</span>`:''}</button>`).join('');
-  $('#tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;SND.sfx('tab');render();window.scrollTo(0,0)});
+  $('#tabs').querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;SND.sfx('tab');render();window.scrollTo(0,0);const sc2=$('#screen');sc2.classList.remove('enter');void sc2.offsetWidth;sc2.classList.add('enter')});
   document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=toggleSound);paintSound();
   const sc=$('#screen');
   if(S.dead){renderDead(sc);return}
@@ -840,6 +883,31 @@ function renderDead(sc){
   $('#restart').onclick=()=>confirmModal('Start over?','Your level, gold and gear will be wiped.','Start over',()=>{const n=S.name,o=S.offset;S=fresh(n);S.offset=o;S.created=today();S.lastEval=addDays(today(),-1);S.prog.date=today();save();render()});
   $('#sellAll').onclick=()=>{const eqd=new Set(Object.values(S.eq));let g=0;S.bag=S.bag.filter(i=>{if(eqd.has(i.id))return true;g+=RAR[i.rar].sell;return false});S.gold+=g;save();SND.sfx('coin');render();toast(`+${g} G`)};
 }
+
+const BOSSES=[{nm:'Mire Lurker',c:'#7fbf8f'},{nm:'Ashen Hound',c:'#e08a52'},{nm:'Hollow Stag',c:'#5fe1d9'},{nm:'Gravel Colossus',c:'#9aa7d6'},{nm:'Ember Wyrm',c:'#ff6a3d'},{nm:'The Gatekeeper',c:'#b77cff'}];
+const bossMax=r=>800+r*700;
+const questPct=q=>q.reduce((a,x)=>a+Math.min(1,(S.prog.c[x.id]||0)/x.t),0)/q.length;
+let LAST_HP=null;
+function bossSvg(r){
+  const horns=r>=1?`<path class="horn" d="M72 66 Q38 30 50 2 Q64 34 90 56 Z"/><path class="horn" d="M148 66 Q182 30 170 2 Q156 34 130 56 Z"/>`:'';
+  const horns2=r>=3?`<path class="horn" d="M86 54 Q78 30 90 18 Q94 38 100 50 Z"/><path class="horn" d="M134 54 Q142 30 130 18 Q126 38 120 50 Z"/>`:'';
+  const spikes=r>=2?`<path class="horn" d="M40 96 L22 84 L38 108 Z"/><path class="horn" d="M180 96 L198 84 L182 108 Z"/>`:'';
+  const crown=r>=5?`<path class="horn" d="M92 44 L98 26 L104 40 L110 20 L116 40 L122 26 L128 44 Z"/>`:'';
+  return`<svg viewBox="0 0 220 175" class="beast" aria-hidden="true">
+  <ellipse cx="110" cy="166" rx="84" ry="8" class="shadow"/>
+  <g class="bob">${horns}${horns2}${spikes}${crown}
+  <path class="body" d="M30 156 Q16 96 58 64 Q110 34 162 64 Q204 96 190 156 Q110 170 30 156 Z"/>
+  <path class="rune" d="M110 70 L118 82 L110 94 L102 82 Z M110 58 V66"/>
+  <path class="eye" d="M70 96 L100 104 L74 112 Z"/><path class="eye" d="M150 96 L120 104 L146 112 Z"/>
+  <path class="maw" d="M80 128 Q110 148 140 128 L133 137 L127 130 L121 140 L115 131 L110 141 L105 131 L99 140 L93 130 L87 137 Z"/>
+  <path class="claw" d="M34 146 l-12 14 M44 150 l-6 16 M186 146 l12 14 M176 150 l6 16"/>
+  </g></svg>`}
+function bossHtml(r,R,q,done){const B=BOSSES[r],mx=bossMax(r),p=done?1:questPct(q),hp=Math.round(mx*(1-p)),dead=p>=1,to=(1-p)*100,from=LAST_HP==null?to:LAST_HP;
+  return`<div class="arena ${dead?'dead':''}" style="--bc:${B.c}">
+  <div class="qhead"><span class="tag">${done?'GATE CLEARED':dead?'BOSS DEFEATED · CLAIM YOUR SPOILS':'GATE BOSS · '+R.L+'-RANK'}</span><h2>${B.nm}</h2><div class="note">${fmtDate(today())} · ${dead?'it has fallen':'every rep is a strike'}</div></div>
+  <div class="boss" id="boss">${bossSvg(r)}${dead?'<div class="slain">SLAIN</div>':''}</div>
+  <div class="hp"><div class="hpbar"><b style="width:${from}%"></b><i style="width:${from}%" data-to="${to}"></i></div><div class="hpnum mono">${hp.toLocaleString()} / ${mx.toLocaleString()} HP</div></div>
+  </div>`}
 function renderQuest(sc,r,R){
   const q=quest(),t=today(),done=!!S.days[t],allDone=q.every(x=>(S.prog.c[x.id]||0)>=x.t);
   const xpR=100+20*r+Math.min(S.streak,10)*5,tier=chestTierFor(S.streak+1);
@@ -848,7 +916,7 @@ function renderQuest(sc,r,R){
   <div class="win timer ${done?'':'red'}"><div><div class="eyebrow" style="color:${done?'var(--sys)':'var(--blood)'}">${done?'Next gate opens in':'Gate closes in'}</div><div class="clock" id="clock">--:--:--</div></div>
     <div style="text-align:right"><div class="eyebrow" style="color:var(--dim)">Streak</div><div class="mono" style="font-size:22px;font-weight:700">${S.streak}<span style="font-size:12px;color:var(--dim)"> days</span></div></div></div>
   <div class="win sys">
-    <div class="qhead"><span class="tag">QUEST ARRIVED</span><h2>Daily training</h2><div class="note">${R.L}-Rank gate · ${fmtDate(t)}</div></div>
+    ${bossHtml(r,R,q,done)}
     <div class="pb">
       ${q.map(x=>{const v=S.prog.c[x.id]||0,f=x.u?v.toFixed(1):v,tt=x.u?x.t.toFixed(1):x.t;
         return`<div class="ex ${v>=x.t?'done':''}"><div><div class="nm">${x.nm}</div><div class="ct"><b>${f}</b> / ${tt}${x.u?' '+x.u:''}</div></div>
@@ -867,9 +935,15 @@ function renderQuest(sc,r,R){
   sc.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>{
     const x=q.find(e=>e.id===b.dataset.ex);let v=S.prog.c[x.id]||0;const was=v>=x.t;
     if(b.dataset.d==='all')v=x.t;else v=Math.max(0,Math.min(x.t*2,+(v+x.s*b.dataset.d).toFixed(1)));
-    const old=S.prog.c[x.id]||0;S.prog.c[x.id]=v;save();SND.sfx(!was&&v>=x.t?'done':'tick');const[fx,fy]=FX.at(b);const dv=+(v-old).toFixed(1);if(dv)FX.float(fx,fy-24,(dv>0?'+':'')+dv+(x.u?' km':''),dv>0?'#7ff0e9':'#ff8fa3');if(!was&&v>=x.t){FX.burst(fx,fy,'#f3d68a',34,3.8);FX.burst(fx,fy,'#5fe1d9',16,3)}render();
+    const p0=questPct(q);const old=S.prog.c[x.id]||0;S.prog.c[x.id]=v;const p1=questPct(q);save();SND.sfx(!was&&v>=x.t?'done':'tick');const[fx,fy]=FX.at(b);const dv=+(v-old).toFixed(1);if(dv)FX.float(fx,fy-24,(dv>0?'+':'')+dv+(x.u?' km':''),dv>0?'#7ff0e9':'#ff8fa3');if(!was&&v>=x.t){FX.burst(fx,fy,'#f3d68a',34,3.8);FX.burst(fx,fy,'#5fe1d9',16,3)}render();
+    if(p1>p0){const bo=$('#boss');if(bo){const[bx,by]=FX.at(bo),dmg=Math.round((p1-p0)*bossMax(r)),crit=Math.random()<.2,bc=BOSSES[r].c;
+      bo.classList.add('hit');FX.float(bx+(Math.random()*60-30),by-50,(crit?'CRIT -':'-')+dmg,crit?'#ffd36b':'#ff8fa3',crit?'big':'');SND.sfx(crit?'crit':'hit');
+      FX.burst(bx,by,bc,crit?44:18,crit?6.5:4);if(crit)FX.shake();
+      if(p1>=1){setTimeout(()=>{SND.sfx('slay');const w=document.createElement('div');w.className='white-flash';document.body.appendChild(w);setTimeout(()=>w.remove(),600);
+        FX.burst(bx,by,bc,140,8,.04);FX.burst(bx,by,'#f3d68a',70,6,.1);FX.shake();toast('Boss slain! Claim your spoils.')},280)}}}
   });
   const c=$('#claim');c&&(c.onclick=claim);
+  {const bi=sc.querySelector('.hpbar i'),bg=sc.querySelector('.hpbar b');if(bi){requestAnimationFrame(()=>requestAnimationFrame(()=>{bi.style.width=bi.dataset.to+'%';bg.style.width=bi.dataset.to+'%'}));LAST_HP=+bi.dataset.to}}
   wireInstall();tickClock();
 }
 
@@ -902,7 +976,7 @@ function renderHunter(sc,r,R){
   </div>
   <div class="win sys"><div class="ph"><h3>Equipment</h3><span class="note">Tap a slot to unequip</span></div><div class="pb"><div class="figure">${hunterSvg()}</div>
     <div class="slots">${SLOTS.map(s=>{const it=item(S.eq[s.id]);if(!it)return`<button class="slot empty" data-go="loot"><span class="sl">${s.nm}</span><span class="sn">Empty</span><span class="ss" style="color:var(--dim)">Find in chests</span></button>`;
-      const R=RAR[it.rar];return`<button class="slot" style="--rar:${R.c}" data-uneq="${s.id}" aria-label="Unequip ${esc(it.nm)}"><span class="sl">${s.nm}</span><span class="sn">${esc(it.nm)}</span>
+      const R=RAR[it.rar];return`<button class="slot" data-r="${it.rar}" style="--rar:${R.c}" data-uneq="${s.id}" aria-label="Unequip ${esc(it.nm)}"><span class="sl">${s.nm}</span><span class="sn">${esc(it.nm)}</span>
       <span style="display:flex;justify-content:space-between;align-items:center;gap:6px"><span class="ss">+${it.v} ${it.st}</span>${it.dur!=null?`<span class="pips ${it.dur===1?'warn':''}" aria-label="Durability ${it.dur} of 3">${[0,1,2].map(i=>`<i class="${i<it.dur?'f':''}"></i>`).join('')}</span>`:''}</span></button>`}).join('')}</div>
     <p class="note" style="margin-top:10px">Armor (head, chest, hands, feet) loses a pip each time you lose a heart, and shatters at zero. Weapons and relics never break.</p>
   </div></div>`;
@@ -920,7 +994,7 @@ function renderLoot(sc){
   </div></div>
   <div class="win"><div class="ph"><h3>Bag</h3><span class="note">${S.bag.length} items</span></div><div class="pb">
     <div class="bagtools">${['all',...SLOTS.map(s=>s.id)].map(f=>`<button class="chip ${BAGF===f?'on':''}" data-f="${f}">${f==='all'?'All':SLOTS.find(s=>s.id===f).nm}</button>`).join('')}</div>
-    ${bag.length?`<div class="bag">${bag.map(it=>{const R=RAR[it.rar],on=eqd.has(it.id);return`<div class="gear ${on?'eqd':''}" style="--rar:${R.c}"><div style="min-width:0"><div class="g">${esc(it.nm)}${on?' <span class="mono" style="font-size:10px;color:var(--sys)">EQUIPPED</span>':''}</div>
+    ${bag.length?`<div class="bag">${bag.map(it=>{const R=RAR[it.rar],on=eqd.has(it.id);return`<div class="gear ${on?'eqd':''}" data-r="${it.rar}" style="--rar:${R.c}"><div style="min-width:0"><div class="g">${esc(it.nm)}${on?' <span class="mono" style="font-size:10px;color:var(--sys)">EQUIPPED</span>':''}</div>
       <div class="m">${it.rar} ${SLOTS.find(s=>s.id===it.slot).nm} · +${it.v} ${it.st}${it.dur!=null?` · ${it.dur}/3`:''}</div></div>
       <div class="acts">${on?'':`<button class="btn sm" data-eq="${it.id}">Equip</button>`}<button class="btn ghost sm" data-sell="${it.id}" aria-label="Sell ${esc(it.nm)} for ${R.sell} gold">${R.sell}G</button></div></div>`}).join('')}</div>`
       :`<div class="empty">Nothing here yet. Open a chest to fill your bag.</div>`}
@@ -977,7 +1051,7 @@ setInterval(tickClock,1000);
 function showApp(){$('#landing').hidden=true;$('#app').hidden=false;const rep=evaluate();render();window.scrollTo(0,0);reportModal(rep)}
 function showLanding(){$('#app').hidden=true;$('#landing').hidden=false;window.scrollTo(0,0);paintSound();const e=$('#enterBtn');if(e)e.textContent=S?'Continue':'Enter the gate'}
 function howTo(){openModal(`<div class="tag">HOW TO PLAY</div><h2>One gate a day</h2><div class="guide">
- <div><b>1 · Clear the quest</b><span>Log push-ups, sit-ups, squats and your run before midnight, then claim XP and gold.</span></div>
+ <div><b>1 · Slay the gate boss</b><span>Every rep you log strikes today's boss. Finish push-ups, sit-ups, squats and your run before midnight to slay it, then claim XP and gold.</span></div>
  <div><b>2 · Open chests</b><span>Every clear drops a chest. 3, 7 and 14-day streaks drop Iron, Gilded and Obsidian chests.</span></div>
  <div><b>3 · Gear up</b><span>Equip six slots (weapon, head, body, hands, feet, relic) to raise STR, AGI, VIT and END. Sell spares for gold.</span></div>
  <div><b>4 · Rank up</b><span>Levels lift you from E-Rank Initiate to S-Rank Sovereign. Higher ranks mean harder quests.</span></div>
