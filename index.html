@@ -598,6 +598,21 @@ h1,h2,h3{font-family:var(--f-fantasy);letter-spacing:.04em}
 .gate-intro .gtxt{background:linear-gradient(90deg,transparent,rgba(2,3,8,.88) 18%,rgba(2,3,8,.88) 82%,transparent);padding:22px 0}
 .combo{background:linear-gradient(180deg,rgba(8,10,20,.92),rgba(3,4,9,.92));border:1px solid var(--cc,#5fe1d9);padding:6px 20px 8px;box-shadow:0 0 24px color-mix(in srgb,var(--cc,#5fe1d9) 40%,transparent),0 10px 24px rgba(0,0,0,.6);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
 
+/* ================= HALL OF HUNTERS ================= */
+.live{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:#7ff0a8;text-transform:uppercase}
+.live i{width:8px;height:8px;border-radius:50%;background:#3ee07a;box-shadow:0 0 10px #3ee07a;animation:livep 1.6s ease-in-out infinite}
+.live.off{color:var(--dim)}.live.off i{background:#555c70;box-shadow:none;animation:none}
+@keyframes livep{50%{opacity:.35}}
+.lb-wait{display:grid;justify-items:center;gap:12px;padding:30px 0;color:var(--dim);font-family:var(--f-fantasy)}
+.spin{width:40px;height:40px;border:2px solid rgba(201,162,74,.25);border-top-color:var(--trim-hi);border-radius:50%;animation:spin 1s linear infinite}
+.pod{position:relative;padding-top:22px!important}
+.pod .pe{position:absolute;top:-14px;left:50%;margin-left:-14px;width:28px;height:32px;display:grid;place-items:center;font-family:var(--f-fantasy);font-weight:900;font-size:14px;color:#08090f;
+  clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);background:linear-gradient(155deg,#fff,var(--rc) 35%,color-mix(in srgb,var(--rc) 45%,#000))}
+.pod .crown{position:absolute;top:-40px;left:0;right:0;font-size:22px;color:var(--trim-hi);text-shadow:0 0 14px var(--trim);animation:bob 2.4s ease-in-out infinite}
+.podium{margin-top:30px}
+.pod.mine{outline:2px solid var(--sys);outline-offset:2px}
+.bt{display:block;font-family:var(--f-fantasy);font-style:italic;font-size:11px;color:var(--trim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 @media (max-width:760px){
   .hero{grid-template-columns:1fr;padding-block:24px}
   .cols4{grid-template-columns:1fr 1fr}
@@ -668,6 +683,7 @@ h1,h2,h3{font-family:var(--f-fantasy);letter-spacing:.04em}
 <div class="overlay" id="overlay" hidden><div class="win sys modal" id="modal" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" hidden role="status"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* ================= SOUND: original generative dark ambient + SFX ================= */
 const SND={
@@ -879,12 +895,8 @@ const GEAR={
  feet:{common:['Canvas Trainers'],rare:['Tempo Boots'],epic:['Stride of the Long Road'],legendary:['Wingstep Greaves']},
  relic:{common:['Chalk Pouch'],rare:['Resistance Coil'],epic:['Ironlung Amulet'],legendary:['Ember of the First Dawn']}};
 const CHESTS={wood:{nm:'Wooden',c:'#c99a6a',m:0},iron:{nm:'Iron',c:'#a9b8d0',m:1},gold:{nm:'Gilded',c:'#f0c055',m:2},obsidian:{nm:'Obsidian',c:'#b77cff',m:3}};
-const BOARDS={
- friends:[['Mokoena',1210],['Tavi.lifts',430],['Quiet Oak',180],['Lerato_runs',95]],
- country:[['Kestrel_RUN',4180],['Sizwe.Iron',3320],['Mokoena',1210],['Ash&Ember',990],['Tavi.lifts',430],['Quiet Oak',180]],
- global:[['Nightjar',18420],['HollowCrown',15900],['Kestrel_RUN',4180],['Ironmonk_KR',3960],['Sizwe.Iron',3320],['Velkan',2875],['Ash&Ember',990]]};
 
-let S=null,TAB='quest',BAGF='all',BOARD='friends';
+let S=null,TAB='quest',BAGF='all',BOARD='xp';
 const $=s=>document.querySelector(s);
 const pad=n=>String(n).padStart(2,'0');
 const k=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -892,7 +904,7 @@ const addDays=(key,n)=>{const[y,m,d]=key.split('-').map(Number);return k(new Dat
 const today=()=>{const d=new Date();d.setDate(d.getDate()+(S?S.offset:0));return k(d)};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtDate=key=>{const[y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'})};
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(typeof NET!=='undefined')NET.queue()}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function makeItem(slot,rar){const[a,b]=RAR[rar].p,sd=SLOTS.find(s=>s.id===slot);const list=GEAR[slot][rar];
@@ -1223,21 +1235,56 @@ function renderLoot(sc){
   sc.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>equip(b.dataset.eq));
   sc.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const it=item(b.dataset.sell);if(eqd.has(it.id)||it.rar==='epic'||it.rar==='legendary')confirmModal(`Sell ${esc(it.nm)}?`,`You get ${RAR[it.rar].sell} gold. This can't be undone.`,'Sell',()=>sell(it.id));else sell(it.id)});
 }
+
+/* ================= GLOBAL LEADERBOARD (Supabase) ================= */
+const NET_CFG={url:'',key:''}; // filled in once the online database exists
+const NET={sb:null,uid:null,t:0,
+  get on(){return !!(NET_CFG.url&&NET_CFG.key&&window.supabase&&navigator.onLine!==false)},
+  client(){if(!this.sb&&this.on)this.sb=window.supabase.createClient(NET_CFG.url,NET_CFG.key,{auth:{persistSession:true,storageKey:'gatebound.auth'}});return this.sb},
+  async user(){const sb=this.client();if(!sb)return null;let {data}=await sb.auth.getSession();if(data&&data.session){this.uid=data.session.user.id;return data.session.user}
+    const r=await sb.auth.signInAnonymously();if(r.error)throw r.error;this.uid=r.data.user.id;return r.data.user},
+  queue(){if(!this.on||!S)return;clearTimeout(this.t);this.t=setTimeout(()=>this.push(),2500)},
+  async push(){try{const u=await this.user();if(!u||!S)return;
+    const {error}=await this.sb.from('hunters').upsert({user_id:u.id,name:S.name.slice(0,18),xp:S.totalXp,level:S.level,best_streak:S.best,slain:S.slain||0,title:titleOf()||null},{onConflict:'user_id'});
+    if(error)console.warn('board push',error.message)}catch(e){console.warn('board',e)}},
+  async top(kind){const col={xp:'xp',streak:'best_streak',slain:'slain'}[kind];const sb=this.client();if(!sb)return null;
+    await this.user().catch(()=>{});
+    const {data,error}=await sb.from('hunters').select('user_id,name,xp,level,best_streak,slain,title').order(col,{ascending:false}).order('updated_at',{ascending:true}).limit(50);
+    if(error)throw error;let mePos=null;const mine=data.findIndex(r=>r.user_id===this.uid);
+    if(mine<0&&this.uid&&S){const myVal={xp:S.totalXp,streak:S.best,slain:S.slain||0}[kind];const c=await sb.from('hunters').select('user_id',{count:'exact',head:true}).gt(col,myVal);mePos=(c.count||0)+1}
+    const total=await sb.from('hunters').select('user_id',{count:'exact',head:true});
+    return{rows:data,col,mePos,total:total.count||data.length}}
+};
 function renderBoard(sc,r){
-  const lvOf=x=>{let l=1;while(x>=need(l)){x-=need(l);l++}return l};
-  const list=[...BOARDS[BOARD].map(([n,x])=>({n,x})),{n:S.name,x:S.totalXp,me:1}].sort((a,b)=>b.x-a.x);
-  const top=list.slice(0,3),ord=[top[1],top[0],top[2]];
+  const tabs=[['xp','Power'],['streak','Streak'],['slain','Slayers']];
+  const unit={xp:'XP',streak:'days',slain:'slain'}[BOARD];
   sc.innerHTML=`
-  <div class="win sys"><div class="ph"><h3>Leaderboard</h3><span class="note">Sample players · ranked by XP</span></div><div class="pb">
-    <div class="seg" role="tablist">${['friends','country','global'].map(b=>`<button class="${BOARD===b?'on':''}" data-b="${b}" role="tab" aria-selected="${BOARD===b}">${b}</button>`).join('')}</div>
-    <div class="podium">${ord.map((p,i)=>p?`<div class="pod ${i===1?'first':''}" style="padding-block:${i===1?18:10}px"><div class="p" style="color:${i===1?'var(--gold)':'var(--dim)'}">${i===1?1:i===0?2:3}</div><div class="pn">${esc(p.n)}${p.me?' (you)':''}</div><div class="px">${p.x} XP</div></div>`:'<div></div>').join('')}</div>
-    <div class="board">${list.map((b,i)=>{const rr=RANKS[rankIdx(lvOf(b.x))];return`<div class="brow ${b.me?'me':''}"><span class="pos">#${i+1}</span><span class="nm">${esc(b.n)}${b.me?' (you)':''}${b.me&&titleOf()?`<span class="note" style="display:block;color:var(--trim);font-style:italic">${esc(titleOf())}</span>`:''}</span><span class="rk" style="color:${rr.c}">${rr.L}</span><span class="x">${b.x}</span></div>`}).join('')}</div>
+  <div class="win sys lb"><div class="ph"><h3>Hall of Hunters</h3><span class="live ${NET.on?'':'off'}"><i></i>${NET.on?'Live · worldwide':'Offline'}</span></div><div class="pb">
+    <div class="seg" role="tablist">${tabs.map(([b,l])=>`<button class="${BOARD===b?'on':''}" data-b="${b}" role="tab" aria-selected="${BOARD===b}">${l}</button>`).join('')}</div>
+    <div id="lbBody">${NET.on?`<div class="lb-wait"><div class="spin"></div>Summoning the hunters…</div>`:offlineBoard()}</div>
   </div></div>
   <div class="win"><div class="ph"><h3>Your climb</h3></div><div class="pb climb">
     ${RANKS.map((x,i)=>`<div class="r ${i===r?'cur':''} ${i>r?'lock':''}"><b style="color:${x.c}">${x.L}</b><span>${x.t}${i===r?' <span class="mono" style="font-size:11px;color:var(--sys)">YOU</span>':''}</span><span class="mono note">Lv ${x.min}+</span></div>`).join('')}
   </div></div>`;
   sc.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{BOARD=b.dataset.b;SND.sfx('tick');render()});
+  if(!NET.on)return;
+  const want=BOARD;
+  NET.top(want).then(res=>{const el=$('#lbBody');if(!el||BOARD!==want||TAB!=='board')return;
+    if(!res||!res.rows.length){el.innerHTML=`<div class="empty">No hunters on the board yet. Clear today's gate to claim the first spot.</div>`;return}
+    const val=row=>row[res.col],rk=row=>RANKS[rankIdx(row.level)];
+    const top=res.rows.slice(0,3),ord=[top[1],top[0],top[2]],place=[2,1,3];
+    el.innerHTML=`<div class="podium">${ord.map((p,i)=>p?`<div class="pod ${i===1?'first':''} ${p.user_id===NET.uid?'mine':''}" style="--rc:${rk(p).c}">
+        ${i===1?'<div class="crown">♛</div>':''}<div class="pe">${rk(p).L}</div><div class="p">${place[i]}</div><div class="pn">${esc(p.name)}</div><div class="px">${val(p).toLocaleString()} ${unit}</div></div>`:'<div></div>').join('')}</div>
+      <div class="board">${res.rows.map((b,i)=>{const R2=rk(b),me=b.user_id===NET.uid;return`<div class="brow ${me?'me':''}"><span class="pos">#${i+1}</span>
+        <span class="nm">${esc(b.name)}${me?' (you)':''}${b.title?`<span class="bt">${esc(b.title)}</span>`:''}</span><span class="rk" style="color:${R2.c}">${R2.L}</span><span class="x">${val(b).toLocaleString()}</span></div>`}).join('')}
+      ${res.mePos?`<div class="gap">• • •</div><div class="brow me"><span class="pos">#${res.mePos}</span><span class="nm">${esc(S.name)} (you)</span><span class="rk" style="color:${RANKS[rankIdx(S.level)].c}">${RANKS[rankIdx(S.level)].L}</span><span class="x">${({xp:S.totalXp,streak:S.best,slain:S.slain||0})[want].toLocaleString()}</span></div>`:''}</div>
+      <p class="note" style="margin-top:10px;text-align:center">${res.total.toLocaleString()} hunter${res.total===1?'':'s'} worldwide · updates after every clear</p>`;
+  }).catch(e=>{const el=$('#lbBody');if(el)el.innerHTML=`<div class="empty">Couldn't reach the leaderboard. Check your connection and open this tab again.</div>`;console.warn(e)});
 }
+function offlineBoard(){const R2=RANKS[rankIdx(S.level)];
+  return`<div class="empty" style="text-align:left;display:grid;gap:10px"><b style="font-family:var(--f-fantasy);color:var(--trim-hi);font-size:16px">The global hall opens soon</b>
+  <span>Real hunters from everywhere will appear here, ranked by power, streak and bosses slain. Until then, here is your standing.</span></div>
+  <div class="board" style="margin-top:10px"><div class="brow me"><span class="pos">#1</span><span class="nm">${esc(S.name)} (you)${titleOf()?`<span class="bt">${esc(titleOf())}</span>`:''}</span><span class="rk" style="color:${R2.c}">${R2.L}</span><span class="x">${S.totalXp.toLocaleString()}</span></div></div>`}
 function renderShop(sc){
   const arm=SLOTS.filter(s=>s.arm).map(s=>item(S.eq[s.id])).filter(i=>i&&i.dur<3);
   const items=[
@@ -1252,14 +1299,11 @@ function renderShop(sc){
   </div></div>
   <div class="win"><div class="ph"><h3>System log</h3></div><div class="pb">
     <div class="log">${S.log.map(l=>`<div>${esc(l)}</div>`).join('')}</div>
-    <div style="margin-top:16px"><div class="eyebrow" style="color:var(--dim);margin-bottom:8px">Test controls</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="skipDay">Jump to tomorrow</button><button class="btn ghost sm" id="about">How to play</button><button class="btn ghost sm" id="reset">Reset hunter</button></div>
-    <p class="note" style="margin-top:6px">"Jump to tomorrow" moves the game clock ahead one day so you can see streaks, lost hearts and cracked armor in action.</p></div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="about">How to play</button><button class="btn ghost sm" id="reset">Reset hunter</button></div>
   </div></div>`;
   const buy={freeze:()=>{S.freezes++;return'Streak freeze added.'},heart:()=>{S.hearts++;return'+1 heart.'},
     repair:()=>{arm.forEach(i=>i.dur=3);return'Armor repaired.'},chest:()=>{S.chests.iron++;return'Iron chest added to Loot.'}};
   sc.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const it=items.find(x=>x[0]===b.dataset.buy);S.gold-=it[3];const m=buy[it[0]]();log(`Bought: ${it[1]}.`);save();SND.sfx('coin');render();toast(m)});
-  $('#skipDay').onclick=()=>{S.offset++;const rep=evaluate();render();if(!rep.missed&&!rep.frozen&&!rep.fell){SND.sfx('notice');toast(`Game clock: ${fmtDate(today())}`)}else reportModal(rep)};
   $('#about').onclick=howTo;
   $('#reset').onclick=()=>confirmModal('Reset your hunter?','Everything will be wiped and you will start from the selection screen.','Reset',()=>{try{localStorage.removeItem(KEY)}catch(e){}S=null;showLanding();selectionModal()});
 }
